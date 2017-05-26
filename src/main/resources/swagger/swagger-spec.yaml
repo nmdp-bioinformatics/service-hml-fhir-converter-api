@@ -1,0 +1,69 @@
+swagger: '2.0'
+
+info:
+  version: "0.0.1"
+  title: service-hml-fhir-converter-api
+  description: Hml and Fhir conversion service
+
+schemes:
+  - https
+
+produces:
+  - application/json
+
+paths:
+  /hml:
+    post:
+      operationId: convertToFhir
+      parameters:
+        -
+          in: body
+          name: hml
+          required: true
+          schema:
+            $ref: '#/definitions/Hml'
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Fhir'
+        500:
+          schema:
+            $ref: '#/definitions/Error'
+          title: ErrorException
+    put:
+      operationId: convertToFhirBulk
+      parameters:
+        -
+          in: body
+          name: hmls
+          required: true
+          schema:
+            items:
+              $ref: '#/definitions/Hml'
+            type: array
+      responses:
+        200:
+          schema:
+            itmes:
+              $ref: '#/definitions/Fhir'
+        500:
+          schema:
+            $ref: '#/definitions/Error'
+          title: ErrorException
+
+definitions:
+  Hml:
+    properties:
+      id:
+        type: string
+    type: object
+  Fhir:
+    properties:
+      id:
+        type: string
+    type: object
+  Error:
+    properties:
+      id:
+        type: string
+    type: object
