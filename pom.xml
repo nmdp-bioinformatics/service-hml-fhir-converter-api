@@ -77,7 +77,6 @@
                         <configuration>
                             <inputSpec>src/main/resources/swagger/swagger-spec.yaml</inputSpec>
                             <language>spring-mvc</language>
-                            <modelPackage>org.nmdp.hmlfhirconvertermodels.dto</modelPackage>
                             <configOptions>
                                 <library>j8-async</library>
                                 <sourceFolder>src/gen/java/main</sourceFolder>
