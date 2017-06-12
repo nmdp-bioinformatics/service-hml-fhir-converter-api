@@ -1,0 +1,20 @@
+/hml:
+  post:
+    operationId: convert
+    parameters:
+      -
+        in: body
+        name: hmls
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/Hml'
+          type: array
+    responses:
+      200:
+        schema:
+          type: boolean
+      500:
+        schema:
+          $ref: '#/definitions/Error'
+        title: ErrorException

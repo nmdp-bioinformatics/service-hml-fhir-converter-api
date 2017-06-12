@@ -65,6 +65,45 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>exec-maven-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<executable>python</executable>-->
+                    <!--<workingDirectory>${basedir}</workingDirectory>-->
+                    <!--<outputFile>src/resources/swawgger/swagger-composition.log</outputFile>-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>compose-swagger-spec</id>-->
+                        <!--<phase>generate-resources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>exec</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<arguments>-->
+                                <!--&lt;!&ndash;&lt;!&ndash;python script path&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<argument>/Users/andrew/Source/Python/util-swagger-codegen-models/Download.py</argument>&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;github user account&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<argument>abrown3-nmdp</argument>&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;github password&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<argument>Akt2hnrnpe1!</argument>&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;gitbug branch&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<argument>master</argument>&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;swagger-template.txt&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<argument>/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-spec.yaml</argument>&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;swagger paths directory path&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<argument>/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/paths</argument>&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;swagger template path&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<argument>/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-template.txt</argument>&ndash;&gt;-->
+                                <!--<argument>-->
+                                    <!--/Users/andrew/Source/Python/util-swagger-codegen-models/Download.py abrown3-nmdp Akt2hnrnpe1! master /Users/andrew/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-spec.yaml /Users/andrew/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/paths /Users/andrew/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-template.txt-->
+                                <!--</argument>-->
+                            <!--</arguments>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
@@ -83,6 +122,7 @@
                                 <generateModels>false</generateModels>
                             </configOptions>
                         </configuration>
+                        <phase>generate-sources</phase>
                     </execution>
                 </executions>
             </plugin>
