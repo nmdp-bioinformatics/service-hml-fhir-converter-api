@@ -64,7 +64,7 @@ public class FhirController implements FhirApi {
         try {
             List<FhirMessage> fhirMessages = fhirService.convertByteArrayToFhirMessages(file.getBytes());
             Map<String, FhirMessage> dbFhirs = fhirService.writeFhirToMongoConversionDb(fhirMessages);
-            kafkaProducerService.produceFhirKafkaMessages(dbFhirs, "fhir-hml-conversion", "andrew-mbp");
+            kafkaProducerService.produceKafkaMessages(dbFhirs, "fhir-hml-conversion", "andrew-mbp");
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload fhir to hml conversion.", ex);
