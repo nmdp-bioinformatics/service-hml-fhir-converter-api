@@ -24,5 +24,12 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
+import org.nmdp.hmlfhirconvertermodels.domain.fhir.FhirMessage;
+
+import java.util.List;
+import java.util.Map;
+
 public interface FhirService {
+    Map<String, FhirMessage> writeFhirToMongoConversionDb(List<FhirMessage> fhirMessages);
+    List<FhirMessage> convertByteArrayToFhirMessages(byte[] bytes) throws Exception;
 }
