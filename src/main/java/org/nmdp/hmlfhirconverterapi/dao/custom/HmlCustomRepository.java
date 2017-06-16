@@ -24,7 +24,7 @@ package org.nmdp.hmlfhirconverterapi.dao.custom;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import org.nmdp.hmlfhirconvertermodels.domain.Hml;
+import org.nmdp.hmlfhirconvertermodels.domain.hml.Hml;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -26,7 +26,7 @@ package org.nmdp.hmlfhirconverterapi.dao;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import org.nmdp.hmlfhirconvertermodels.domain.Hml;
+import org.nmdp.hmlfhirconvertermodels.domain.hml.Hml;
 
 public interface HmlRepository extends MongoRepository<Hml, String> {
 

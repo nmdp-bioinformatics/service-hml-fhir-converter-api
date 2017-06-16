@@ -24,3 +24,5 @@ hs_err_pid*
 .idea/
 
 target/
+src/main/resources/swagger/swagger-spec.fhir.yaml
+src/main/resources/swagger/swagger-spec.hml.yaml
