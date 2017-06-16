@@ -110,19 +110,36 @@
                 <version>${swagger-codegen-version}</version>
                 <executions>
                     <execution>
+                        <id>hml</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>src/main/resources/swagger/swagger-spec.yaml</inputSpec>
+                            <inputSpec>src/main/resources/swagger/swagger-spec.hml.yaml</inputSpec>
                             <language>spring-mvc</language>
+                            <modelPackage>org.nmdp.hmlfhirconvertermodels.dto.hml</modelPackage>
                             <configOptions>
                                 <library>j8-async</library>
                                 <sourceFolder>src/gen/java/main</sourceFolder>
                                 <generateModels>false</generateModels>
                             </configOptions>
                         </configuration>
-                        <phase>generate-sources</phase>
+                    </execution>
+                    <execution>
+                        <id>fhir</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>src/main/resources/swagger/swagger-spec.fhir.yaml</inputSpec>
+                            <language>spring-mvc</language>
+                            <modelPackage>org.nmdp.hmlfhirconvertermodels.dto.fhir</modelPackage>
+                            <configOptions>
+                                <library>j8-async</library>
+                                <sourceFolder>src/gen/java/main</sourceFolder>
+                                <generateModels>false</generateModels>
+                            </configOptions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
