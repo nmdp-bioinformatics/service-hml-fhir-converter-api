@@ -36,7 +36,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @SpringBootApplication
-@ComponentScan({"org.nmdp.kafkaproducer"})
+@ComponentScan({"org.nmdp.kafkaproducer", "io.swagger.api", "org.nmdp.hmlfhirconverterapi"})
 public class ServiceHmlFhirConverterApiApplication {
 
     public static void main(String[] args) {
