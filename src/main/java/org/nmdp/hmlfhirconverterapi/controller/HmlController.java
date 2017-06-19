@@ -89,9 +89,4 @@ public class HmlController implements HmlApi {
             return () -> new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @RequestMapping(path = "/{val}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public Callable<ResponseEntity<String>> returnString(@PathVariable String val) {
-        return () -> new ResponseEntity<String>(val, HttpStatus.OK);
-    }
 }
