@@ -18,13 +18,15 @@
         title: ErrorException
   post:
     operationId: convertHmlFileToFhir
+    consumes: multipart/form-data
     parameters:
       -
-        in: body
+        in: formData
         name: file
         required: true
+        type: file
         schema:
-          type: 'file'
+          type: formData
     responses:
       200:
         schema:

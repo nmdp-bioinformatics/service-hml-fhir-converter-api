@@ -60,6 +60,7 @@ public class HmlController implements HmlApi {
         this.kafkaProducerService = kafkaProducerService;
     }
 
+    @Override
     @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PATCH)
     public Callable<ResponseEntity<Boolean>> convert(@RequestBody String xml) {
         try {
@@ -74,6 +75,7 @@ public class HmlController implements HmlApi {
         }
     }
 
+    @Override
     @RequestMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public Callable<ResponseEntity<Boolean>> convertHmlFileToFhir(@RequestBody MultipartFile file) {
         try {
