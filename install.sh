@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-while getopts ":u:p:b:m:y:" opt; do
+while getopts ":u:p:b:m:y:v:" opt; do
     case $opt in
         u) username="$OPTARG"
         ;;
@@ -11,6 +11,8 @@ while getopts ":u:p:b:m:y:" opt; do
         m) model_path="$OPTARG"
         ;;
         y) python_script="$OPTARG"
+        ;;
+        v) mvn_version="$OPTARG"
         ;;
     esac
 done

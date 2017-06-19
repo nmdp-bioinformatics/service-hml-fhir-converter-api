@@ -32,4 +32,5 @@ import java.util.Map;
 public interface FhirService {
     Map<String, FhirMessage> writeFhirToMongoConversionDb(List<FhirMessage> fhirMessages);
     List<FhirMessage> convertByteArrayToFhirMessages(byte[] bytes) throws Exception;
+    List<FhirMessage> convertStringToFhirMessages(String xml) throws Exception;
 }

@@ -102,6 +102,20 @@ public class FhirServiceImpl implements FhirService {
         }
     }
 
+    @Override
+    public List<FhirMessage> convertStringToFhirMessages(String xml) throws Exception {
+        try {
+            ConvertFhirToHml converter = new ConvertFhirToHmlImpl();
+            List<FhirMessage> fhirMessages = new ArrayList<>();
+            fhirMessages.add(converter.toDto(xml, null));
+
+            return fhirMessages;
+        } catch (Exception ex) {
+            LOG.error("Error converting file to FhirMessage.", ex);
+            throw ex;
+        }
+    }
+
     private Map<String, FhirMessage> writeConversionStatusToMongo(
             org.nmdp.hmlfhirmongo.config.MongoConfiguration config, List<FhirMessage> fhirMessages) {
         Map<String, FhirMessage> ids = new HashMap<>();

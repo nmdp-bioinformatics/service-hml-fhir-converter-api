@@ -44,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -61,7 +60,8 @@ public class FhirController implements FhirApi {
         this.kafkaProducerService = kafkaProducerService;
     }
 
-    @RequestMapping(path = "/fhirToHml", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    @Override
+    @RequestMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public Callable<ResponseEntity<Boolean>> convertFhirFileToHml(@RequestBody MultipartFile file) {
         try {
             List<FhirMessage> fhirMessages = fhirService.convertByteArrayToFhirMessages(file.getBytes());
@@ -76,10 +76,11 @@ public class FhirController implements FhirApi {
     }
 
     @Override
-    @RequestMapping(path = "/fhirToHml", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PATCH)
-    public Callable<ResponseEntity<Boolean>> convert(@RequestBody FhirMessage fhirMessage) {
+    @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PATCH)
+    public Callable<ResponseEntity<Boolean>> convert(@RequestBody String xml) {
         try {
-            Map<String, FhirMessage> dbFhirs = fhirService.writeFhirToMongoConversionDb(Arrays.asList(fhirMessage));
+            List<FhirMessage>fhirMessages = fhirService.convertStringToFhirMessages(xml);
+            Map<String, FhirMessage> dbFhirs = fhirService.writeFhirToMongoConversionDb(fhirMessages);
             List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbFhirs, "key");
             kafkaProducerService.produceKafkaMessages(kafkaMessages, "fhir-hml-conversion", "andrew-mbp");
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
