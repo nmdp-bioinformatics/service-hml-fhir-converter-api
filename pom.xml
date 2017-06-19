@@ -27,7 +27,7 @@
         <gson-version>2.8.0</gson-version>
         <swagger-ui-version>2.4.0</swagger-ui-version>
         <apache-kafka-version>0.10.2.1</apache-kafka-version>
-        <kafka-message-model-version>1.6.0</kafka-message-model-version>
+        <kafka-message-model-version>2.0.0</kafka-message-model-version>
         <apache-commons-fileupload-version>1.2.1</apache-commons-fileupload-version>
         <commons-io-version>1.4</commons-io-version>
         <maven-clean-plugin-version>2.6.1</maven-clean-plugin-version>
@@ -38,6 +38,10 @@
         <nmdp-conversion-version>2.0.0</nmdp-conversion-version>
         <nmdp-mongo-version>1.3.0</nmdp-mongo-version>
         <snake-yaml-version>1.16</snake-yaml-version>
+        <json-version>20160212</json-version>
+        <model-mapper-version>0.7.5</model-mapper-version>
+        <apache-commons-fileupload-version>1.2.1</apache-commons-fileupload-version>
+        <commons-io-version>1.4</commons-io-version>
     </properties>
     
     <parent>
@@ -69,45 +73,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>exec-maven-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<executable>python</executable>-->
-                    <!--<workingDirectory>${basedir}</workingDirectory>-->
-                    <!--<outputFile>src/resources/swawgger/swagger-composition.log</outputFile>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>compose-swagger-spec</id>-->
-                        <!--<phase>generate-resources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>exec</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<arguments>-->
-                                <!--&lt;!&ndash;&lt;!&ndash;python script path&ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;<argument>/Users/andrew/Source/Python/util-swagger-codegen-models/Download.py</argument>&ndash;&gt;-->
-                                <!--&lt;!&ndash;&lt;!&ndash;github user account&ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;<argument>abrown3-nmdp</argument>&ndash;&gt;-->
-                                <!--&lt;!&ndash;&lt;!&ndash;github password&ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;<argument>Akt2hnrnpe1!</argument>&ndash;&gt;-->
-                                <!--&lt;!&ndash;&lt;!&ndash;gitbug branch&ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;<argument>master</argument>&ndash;&gt;-->
-                                <!--&lt;!&ndash;&lt;!&ndash;swagger-template.txt&ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;<argument>/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-spec.yaml</argument>&ndash;&gt;-->
-                                <!--&lt;!&ndash;&lt;!&ndash;swagger paths directory path&ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;<argument>/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/paths</argument>&ndash;&gt;-->
-                                <!--&lt;!&ndash;&lt;!&ndash;swagger template path&ndash;&gt;&ndash;&gt;-->
-                                <!--&lt;!&ndash;<argument>/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-template.txt</argument>&ndash;&gt;-->
-                                <!--<argument>-->
-                                    <!--/Users/andrew/Source/Python/util-swagger-codegen-models/Download.py abrown3-nmdp Akt2hnrnpe1! master /Users/andrew/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-spec.yaml /Users/andrew/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/paths /Users/andrew/Source/Java/service-hml-fhir-converter-api/src/main/resources/swagger/swagger-template.txt-->
-                                <!--</argument>-->
-                            <!--</arguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
@@ -121,6 +86,7 @@
                         <configuration>
                             <inputSpec>src/main/resources/swagger/swagger-spec.hml.yaml</inputSpec>
                             <language>spring-mvc</language>
+                            <apiPackage>io.swagger.api.hml</apiPackage>
                             <modelPackage>org.nmdp.hmlfhirconvertermodels.dto.hml</modelPackage>
                             <configOptions>
                                 <library>j8-async</library>
@@ -137,6 +103,7 @@
                         <configuration>
                             <inputSpec>src/main/resources/swagger/swagger-spec.fhir.yaml</inputSpec>
                             <language>spring-mvc</language>
+                            <apiPackage>io.swagger.api.fhir</apiPackage>
                             <modelPackage>org.nmdp.hmlfhirconvertermodels.dto.fhir</modelPackage>
                             <configOptions>
                                 <library>j8-async</library>
@@ -267,6 +234,31 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>${snake-yaml-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nmdp</groupId>
+            <artifactId>service-kafka-producer-model</artifactId>
+            <version>${kafka-message-model-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>${model-mapper-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${apache-commons-fileupload-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io-version}</version>
         </dependency>
     </dependencies>
 

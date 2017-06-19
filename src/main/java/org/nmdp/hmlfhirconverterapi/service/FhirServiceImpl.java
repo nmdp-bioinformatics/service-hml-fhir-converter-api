@@ -25,16 +25,21 @@ package org.nmdp.hmlfhirconverterapi.service;
  */
 
 import org.apache.log4j.Logger;
+
 import org.nmdp.hmlfhir.ConvertFhirToHml;
 import org.nmdp.hmlfhir.ConvertFhirToHmlImpl;
-import org.nmdp.hmlfhirconvertermodels.domain.fhir.FhirMessage;
+import org.nmdp.hmlfhirconverterapi.dao.FhirRepository;
+import org.nmdp.hmlfhirconverterapi.dao.custom.FhirCustomRepository;
+import org.nmdp.hmlfhirconvertermodels.dto.fhir.FhirMessage;
 import org.nmdp.hmlfhirmongo.config.MongoConfiguration;
 import org.nmdp.hmlfhirmongo.models.ConversionStatus;
 import org.nmdp.hmlfhirmongo.models.Status;
 import org.nmdp.hmlfhirmongo.mongo.MongoConversionStatusDatabase;
 import org.nmdp.hmlfhirmongo.mongo.MongoFhirDatabase;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -44,18 +49,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FhirServiceImpl {
+@Service
+public class FhirServiceImpl implements FhirService {
 
-    private final MongoConfiguration mongoConfiguration;
     private final Yaml yaml;
     private static final Logger LOG = Logger.getLogger(FhirServiceImpl.class);
+    private final FhirCustomRepository customRepository;
+    private final FhirRepository repository;
 
     @Autowired
-    public FhirServiceImpl(@Qualifier("mongoConfiguration") MongoConfiguration mongoConfiguration) {
-        this.mongoConfiguration = mongoConfiguration;
+    public FhirServiceImpl(@Qualifier("fhirCustomRepository") FhirCustomRepository customRepository, @Qualifier("fhirRepository") FhirRepository repository) {
         this.yaml = new Yaml();
+        this.customRepository = customRepository;
+        this.repository = repository;
     }
 
+    @Override
     public Map<String, FhirMessage> writeFhirToMongoConversionDb(List<FhirMessage> fhirMessages) {
         List<FhirMessage> ids = new ArrayList<>();
         org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
@@ -79,6 +88,7 @@ public class FhirServiceImpl {
         return writeConversionStatusToMongo(config, ids);
     }
 
+    @Override
     public List<FhirMessage> convertByteArrayToFhirMessages(byte[] bytes) throws Exception {
         try {
             ConvertFhirToHml converter = new ConvertFhirToHmlImpl();

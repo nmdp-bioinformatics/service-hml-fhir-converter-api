@@ -1,7 +1,7 @@
-package org.nmdp.hmlfhirconverterapi.service;
+package org.nmdp.hmlfhirconverterapi.dao;
 
 /**
- * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 5/26/17.
+ * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 6/18/17.
  * <p>
  * service-hml-fhir-converter-api
  * Copyright (c) 2012-2017 National Marrow Donor Program (NMDP)
@@ -24,11 +24,11 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import java.util.List;
-import java.util.Map;
 
-public interface HmlService {
-    List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> convertByteArrayToHmls(byte[] bytes, String xmlPrefix) throws Exception;
-    Map<String, org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> writeHmlToMongoConversionDb(List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> hmls);
-    List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> convertStringToHmls(String xml, String xmlPrefix) throws Exception;
+import org.nmdp.hmlfhirconvertermodels.domain.fhir.FhirMessage;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface FhirRepository extends MongoRepository<FhirMessage, String> {
+
 }

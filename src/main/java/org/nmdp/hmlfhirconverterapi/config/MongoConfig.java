@@ -1,10 +1,10 @@
 package org.nmdp.hmlfhirconverterapi.config;
 
 /**
- * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 5/26/17.
+ * Created by Andrew S. Brown, Ph.D., <abrown3@nmdp.org>, on 12/27/16.
  * <p>
- * service-hml-fhir-converter-api
- * Copyright (c) 2012-2017 National Marrow Donor Program (NMDP)
+ * service-hmlFhirConverter-api
+ * Copyright (c) 2012-2016 National Marrow Donor Program (NMDP)
  * <p>
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
@@ -27,7 +27,6 @@ package org.nmdp.hmlfhirconverterapi.config;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import org.apache.log4j.Logger;
-import org.nmdp.hmlfhirconverterapi.exception.MongoInstantiationException;
 import org.nmdp.hmlfhirconvertermodels.domain.internal.MongoConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -69,7 +68,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
             return new MongoClient(mongoHost + ":" + mongoPort);
         } catch (Exception ex) {
             LOG.error("Error instantiating MongoDB.", ex);
-            throw new MongoInstantiationException(ex);
+            throw ex;
         }
     }
 
@@ -80,7 +79,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
             return new MongoTemplate(new MongoClient(mongoHost + ":" + mongoPort), mongoDb);
         } catch (Exception ex) {
             LOG.error("Error instantiating MongoDB.", ex);
-            throw new MongoInstantiationException(ex);
+            throw ex;
         }
     }
 

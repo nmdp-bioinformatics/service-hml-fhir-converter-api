@@ -1,7 +1,7 @@
-package org.nmdp.hmlfhirconverterapi.service;
+package org.nmdp.hmlfhirconverterapi.config;
 
 /**
- * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 5/26/17.
+ * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 5/23/17.
  * <p>
  * service-hml-fhir-converter-api
  * Copyright (c) 2012-2017 National Marrow Donor Program (NMDP)
@@ -24,11 +24,25 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import java.util.List;
-import java.util.Map;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-public interface HmlService {
-    List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> convertByteArrayToHmls(byte[] bytes, String xmlPrefix) throws Exception;
-    Map<String, org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> writeHmlToMongoConversionDb(List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> hmls);
-    List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> convertStringToHmls(String xml, String xmlPrefix) throws Exception;
+import javax.servlet.MultipartConfigElement;
+
+@Configuration
+@ComponentScan
+@EnableAutoConfiguration
+public class AppConfig {
+
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize("10MB");
+        factory.setMaxRequestSize("128KB");
+
+        return factory.createMultipartConfig();
+    }
 }

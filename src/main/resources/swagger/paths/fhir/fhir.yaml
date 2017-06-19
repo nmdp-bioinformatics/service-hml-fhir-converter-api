@@ -4,12 +4,10 @@
     parameters:
       -
         in: body
-        name: fhirMessages
+        name: fhirMessage
         required: true
         schema:
-          items:
-            $ref: '#/definitions/FhirMessage'
-          type: array
+          $ref: '#/definitions/FhirMessage'
     responses:
       200:
         schema:

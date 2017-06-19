@@ -1,41 +1,48 @@
 #!/bin/sh
 
-echo "Importing model building script from git."
-
 SRC_PATH=`pwd`
 
-username=$1
-password=$2
-branch=$3
-models_path=$4
+while getopts ":u:p:b:m:y:" opt; do
+    case $opt in
+        u) username="$OPTARG"
+        ;;
+        p) password="$OPTARG"
+        ;;
+        b) branch="$OPTARG"
+        ;;
+        m) model_path="$OPTARG"
+        ;;
+        y) python_script="$OPTARG"
+        ;;
+    esac
+done
 
-curl -LJO https://raw.githubusercontent.com/nmdp-bioinformatics/util-swagger-codegen-models/master/Download.py
-
-echo "Executing script to build swagger-spec.yaml, downloading model definitions from git."
-
-if [ -z "$1" ]
-    then
-        echo "Github account user name?"
-        read username
+if [ -z "$username" ]; then
+    echo "Github username?"
+    read username
 fi
 
-if [ -z "$2" ]
-    then
-        echo "Github account password?"
-        read password
+if [ -z "$password" ]; then
+    echo "Github password?"
+    read password
 fi
 
-if [ -z "$3" ]
-    then
-        echo "Branch to download?"
-        read branch
+if [ -z "$branch" ]; then
+    echo "Github branch?"
+    read branch
+fi
+
+if [ -z "$python_script" ]; then
+    echo "Importing model building script from git."
+    curl -LJO https://raw.githubusercontent.com/nmdp-bioinformatics/util-swagger-codegen-models/master/Download.py
+    echo "Executing script to build swagger-spec.yaml, downloading model definitions from git."
 fi
 
 SWAGGER_PATH=$SRC_PATH/src/main/resources/swagger
 SWAGGER_PATHS_DIR=$SWAGGER_PATH/paths
 SWAGGER_TEMPLATE_PATH=$SWAGGER_PATH/swagger-template.txt
 
-python Download.py $username $password $branch $SWAGGER_PATH $SWAGGER_PATHS_DIR $SWAGGER_TEMPLATE_PATH models models_path
+python Download.py $username $password $branch $SWAGGER_PATH $SWAGGER_PATHS_DIR $SWAGGER_TEMPLATE_PATH models $model_path
 
 echo "Successfully built swagger-spec.yaml file(s), removing build script."
 

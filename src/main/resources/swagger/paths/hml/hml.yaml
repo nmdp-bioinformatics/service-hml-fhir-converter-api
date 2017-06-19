@@ -1,15 +1,30 @@
 /hml:
-  post:
+  patch:
     operationId: convert
     parameters:
       -
         in: body
-        name: hmls
+        name: xml
         required: true
         schema:
-          items:
-            $ref: '#/definitions/Hml'
-          type: array
+          type: string
+    responses:
+      200:
+        schema:
+          type: boolean
+      500:
+        schema:
+          $ref: '#/definitions/Error'
+        title: ErrorException
+  post:
+    operationId: convertHmlFileToFhir
+    parameters:
+      -
+        in: body
+        name: file
+        required: true
+        schema:
+          type: 'file'
     responses:
       200:
         schema:

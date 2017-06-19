@@ -33,6 +33,8 @@ import org.nmdp.hmlfhirconverterapi.service.FhirService;
 import org.nmdp.hmlfhirconvertermodels.dto.fhir.FhirMessage;
 import org.nmdp.kafkaproducer.kafka.KafkaProducerService;
 
+import org.nmdp.kafkaproducer.util.ConvertToKafkaMessage;
+import org.nmdp.servicekafkaproducermodel.models.KafkaMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,7 +66,8 @@ public class FhirController implements FhirApi {
         try {
             List<FhirMessage> fhirMessages = fhirService.convertByteArrayToFhirMessages(file.getBytes());
             Map<String, FhirMessage> dbFhirs = fhirService.writeFhirToMongoConversionDb(fhirMessages);
-            kafkaProducerService.produceKafkaMessages(dbFhirs, "fhir-hml-conversion", "andrew-mbp");
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbFhirs, "key");
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, "fhir-hml-conversion", "andrew-mbp");
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload fhir to hml conversion.", ex);
@@ -77,7 +80,8 @@ public class FhirController implements FhirApi {
     public Callable<ResponseEntity<Boolean>> convert(@RequestBody FhirMessage fhirMessage) {
         try {
             Map<String, FhirMessage> dbFhirs = fhirService.writeFhirToMongoConversionDb(Arrays.asList(fhirMessage));
-            kafkaProducerService.produceKafkaMessages(dbFhirs, "fhir-hml-conversion", "andrew-mbp");
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbFhirs, "key");
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, "fhir-hml-conversion", "andrew-mbp");
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload fhir to hml conversion.", ex);

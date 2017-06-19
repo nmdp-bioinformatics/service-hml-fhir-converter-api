@@ -32,9 +32,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @SpringBootApplication
+@ComponentScan({"org.nmdp.kafkaproducer"})
 public class ServiceHmlFhirConverterApiApplication {
 
     public static void main(String[] args) {

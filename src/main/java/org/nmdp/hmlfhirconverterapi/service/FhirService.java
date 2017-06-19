@@ -24,7 +24,7 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import org.nmdp.hmlfhirconvertermodels.domain.fhir.FhirMessage;
+import org.nmdp.hmlfhirconvertermodels.dto.fhir.FhirMessage;
 
 import java.util.List;
 import java.util.Map;
