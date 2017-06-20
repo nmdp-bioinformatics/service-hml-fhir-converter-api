@@ -31,7 +31,6 @@ import org.nmdp.hmlfhir.deserialization.HmlXmlDeserializerHyphenatedProperties;
 import org.nmdp.hmlfhirconverterapi.dao.HmlRepository;
 import org.nmdp.hmlfhirconverterapi.dao.custom.HmlCustomRepository;
 import org.nmdp.hmlfhirconvertermodels.dto.hml.Hml;
-import org.nmdp.hmlfhirmongo.config.MongoConfiguration;
 import org.nmdp.hmlfhirmongo.models.ConversionStatus;
 import org.nmdp.hmlfhirmongo.models.Status;
 import org.nmdp.hmlfhirmongo.mongo.MongoConversionStatusDatabase;
