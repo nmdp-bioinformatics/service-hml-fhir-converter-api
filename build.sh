@@ -34,7 +34,7 @@ fi
 
 if [ -z "$python_script" ]; then
     echo "Importing model building script from git."
-
+    curl -LJO https://raw.githubusercontent.com/nmdp-bioinformatics/util-swagger-codegen-models/master/Download.py
     echo "Executing script to build swagger-spec.yaml, downloading model definitions from git."
 fi
 

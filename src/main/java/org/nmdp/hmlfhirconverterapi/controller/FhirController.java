@@ -29,6 +29,7 @@ import io.swagger.api.fhir.FhirApi;
 
 import org.apache.log4j.Logger;
 
+import org.nmdp.hmlfhirconverterapi.config.KafkaConfig;
 import org.nmdp.hmlfhirconverterapi.service.FhirService;
 import org.nmdp.hmlfhirconverterapi.util.FileConverter;
 import org.nmdp.hmlfhirconvertermodels.dto.fhir.FhirMessage;
@@ -53,11 +54,13 @@ public class FhirController implements FhirApi {
     private static final Logger LOG = Logger.getLogger(FhirController.class);
     private final FhirService fhirService;
     private final KafkaProducerService kafkaProducerService;
+    private final KafkaConfig kafkaConfig;
 
     @Autowired
     public FhirController(FhirService fhirService, KafkaProducerService kafkaProducerService) {
         this.fhirService = fhirService;
         this.kafkaProducerService = kafkaProducerService;
+        this.kafkaConfig = KafkaConfig.getConfig();
     }
 
     @Override
@@ -66,8 +69,8 @@ public class FhirController implements FhirApi {
         try {
             List<FhirMessage> fhirMessages = fhirService.convertByteArrayToFhirMessages(file.getBytes());
             Map<String, FhirMessage> dbFhirs = fhirService.writeFhirToMongoConversionDb(fhirMessages);
-            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbFhirs, "key");
-            kafkaProducerService.produceKafkaMessages(kafkaMessages, "fhir-hml-conversion", "andrew-mbp");
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbFhirs, kafkaConfig.getMessageKey());
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getTopic(), kafkaConfig.getKey());
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload fhir to hml conversion.", ex);
@@ -81,8 +84,8 @@ public class FhirController implements FhirApi {
         try {
             List<FhirMessage>fhirMessages = fhirService.convertStringToFhirMessages(xml);
             Map<String, FhirMessage> dbFhirs = fhirService.writeFhirToMongoConversionDb(fhirMessages);
-            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbFhirs, "key");
-            kafkaProducerService.produceKafkaMessages(kafkaMessages, "fhir-hml-conversion", "andrew-mbp");
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbFhirs, kafkaConfig.getMessageKey());
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getTopic(), kafkaConfig.getKey());
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload fhir to hml conversion.", ex);

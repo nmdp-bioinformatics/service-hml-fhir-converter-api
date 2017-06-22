@@ -1,4 +1,4 @@
-/hml:
+/hml/{prefix}:
   patch:
     operationId: convert
     parameters:
@@ -8,6 +8,12 @@
         required: true
         schema:
           type: string
+      -
+        in: query
+        format: string
+        name: prefix
+        required: false
+        type: string
     responses:
       200:
         schema:
@@ -27,6 +33,12 @@
         type: file
         schema:
           type: formData
+      -
+        in: query
+        format: string
+        name: prefix
+        required: false
+        type: string
     responses:
       200:
         schema:

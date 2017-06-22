@@ -24,6 +24,7 @@ package org.nmdp.hmlfhirconverterapi.controller;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
+import org.nmdp.hmlfhirconverterapi.config.KafkaConfig;
 import org.nmdp.hmlfhirconverterapi.service.HmlService;
 import org.nmdp.hmlfhirconverterapi.util.FileConverter;
 import org.nmdp.hmlfhirconvertermodels.dto.hml.Hml;
@@ -55,21 +56,23 @@ public class HmlController implements HmlApi {
     private static final Logger LOG = Logger.getLogger(HmlController.class);
     private final HmlService hmlService;
     private final KafkaProducerService kafkaProducerService;
+    private final KafkaConfig kafkaConfig;
 
     @Autowired
     public HmlController(HmlService hmlService, KafkaProducerService kafkaProducerService) {
         this.hmlService = hmlService;
         this.kafkaProducerService = kafkaProducerService;
+        this.kafkaConfig = KafkaConfig.getConfig();
     }
 
     @Override
-    @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PATCH)
-    public Callable<ResponseEntity<Boolean>> convert(@RequestBody String xml) {
+    @RequestMapping(path = "/{prefix}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PATCH)
+    public Callable<ResponseEntity<Boolean>> convert(@RequestBody String xml, @PathVariable String prefix) {
         try {
-            List<Hml> hmls = hmlService.convertStringToHmls(xml, "ns2:");
+            List<Hml> hmls = hmlService.convertStringToHmls(xml, prefix);
             Map<String, Hml> dbHmls = hmlService.writeHmlToMongoConversionDb(hmls);
-            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbHmls, "key");
-            kafkaProducerService.produceKafkaMessages(kafkaMessages, "hml-fhir-conversion", "andrew-mbp");
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbHmls, kafkaConfig.getMessageKey());
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getTopic(), kafkaConfig.getKey());
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload hml to fhir conversion.", ex);
@@ -78,13 +81,13 @@ public class HmlController implements HmlApi {
     }
 
     @Override
-    @RequestMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public Callable<ResponseEntity<Boolean>> convertHmlFileToFhir(@RequestBody MultipartFile file) {
+    @RequestMapping(path = "/{prefix}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public Callable<ResponseEntity<Boolean>> convertHmlFileToFhir(@RequestBody MultipartFile file, @PathVariable String prefix) {
         try {
-            List<Hml> hmls = hmlService.convertByteArrayToHmls(file.getBytes(), "ns2:");
+            List<Hml> hmls = hmlService.convertByteArrayToHmls(file.getBytes(), prefix);
             Map<String, Hml> dbHmls = hmlService.writeHmlToMongoConversionDb(hmls);
-            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbHmls, "key");
-            kafkaProducerService.produceKafkaMessages(kafkaMessages, "hml-fhir-conversion", "andrew-mbp");
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbHmls, kafkaConfig.getMessageKey());
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getTopic(), kafkaConfig.getKey());
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload hml to fhir conversion.", ex);
