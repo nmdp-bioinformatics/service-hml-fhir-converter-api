@@ -24,22 +24,20 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
+import com.mongodb.client.FindIterable;
 import org.apache.log4j.Logger;
 import org.nmdp.hmlfhirconverterapi.dao.StatusRepository;
 import org.nmdp.hmlfhirconverterapi.dao.custom.StatusCustomRepository;
-import org.nmdp.hmlfhirmongo.models.ConversionStatus;
+import org.nmdp.hmlfhirmongo.mongo.MongoConversionStatusDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
+import org.bson.Document;
+
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Service
 public class StatusServiceImpl implements StatusService {
 
@@ -57,7 +55,22 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public List<ConversionStatus> getStatuses() {
-        return null;
+    public FindIterable<Document> getStatuses(Integer maxReturn) throws Exception {
+        org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
+
+        try {
+            URL url = new URL("file:." + "/src/main/resources/mongo-configuration.yaml");
+
+            try (InputStream is = url.openStream()) {
+                config = yaml.loadAs(is, org.nmdp.hmlfhirmongo.config.MongoConfiguration.class);
+            }
+
+            final MongoConversionStatusDatabase database = new MongoConversionStatusDatabase(config);
+
+            return database.getMany(maxReturn);
+        } catch (Exception ex) {
+            LOG.error("Error reading Statuses from Mongo.", ex);
+            throw ex;
+        }
     }
 }

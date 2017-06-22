@@ -1,7 +1,12 @@
-package org.nmdp.hmlfhirconverterapi.service;
+package org.nmdp.hmlfhirconverterapi.util;
+
+import scala.util.parsing.input.StreamReader;
+
+import java.io.InputStreamReader;
+import java.util.stream.Stream;
 
 /**
- * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 6/20/17.
+ * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 6/21/17.
  * <p>
  * service-hml-fhir-converter-api
  * Copyright (c) 2012-2017 National Marrow Donor Program (NMDP)
@@ -24,10 +29,9 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import com.mongodb.client.FindIterable;
+public class FileConverter {
 
-import org.bson.Document;
-
-public interface StatusService {
-    FindIterable<Document> getStatuses(Integer maxReturn) throws Exception;
+    public static byte[] convertStringToBytes(String str) {
+        return str.getBytes();
+    }
 }

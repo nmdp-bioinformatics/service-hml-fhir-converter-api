@@ -31,4 +31,6 @@ public interface HmlService {
     List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> convertByteArrayToHmls(byte[] bytes, String xmlPrefix) throws Exception;
     Map<String, org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> writeHmlToMongoConversionDb(List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> hmls);
     List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> convertStringToHmls(String xml, String xmlPrefix) throws Exception;
+    String getXmlHml(String id);
+    String getJsonHml(String id);
 }

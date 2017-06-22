@@ -25,12 +25,14 @@ package org.nmdp.hmlfhirconverterapi.controller;
  */
 
 import org.nmdp.hmlfhirconverterapi.service.HmlService;
+import org.nmdp.hmlfhirconverterapi.util.FileConverter;
 import org.nmdp.hmlfhirconvertermodels.dto.hml.Hml;
 import org.nmdp.kafkaproducer.kafka.KafkaProducerService;
 
 import org.nmdp.kafkaproducer.util.ConvertToKafkaMessage;
 import org.nmdp.servicekafkaproducermodel.models.KafkaMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -87,6 +89,38 @@ public class HmlController implements HmlApi {
         } catch (Exception ex) {
             LOG.error("Error in file upload hml to fhir conversion.", ex);
             return () -> new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(path = "/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
+    public @ResponseBody Callable<ResponseEntity> downloadJson(@PathVariable String id) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+
+            headers.add("content-disposition", "attachment; filename=\"" + id + ".hml.json\"");
+            headers.add("Content-Type", "application/json");
+
+            return () -> new ResponseEntity(FileConverter.convertStringToBytes(hmlService.getJsonHml(id)),
+                    headers, HttpStatus.OK);
+        } catch (Exception ex) {
+            LOG.error("Error downloading json.", ex);
+            return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(path = "/{id}/xml", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
+    public @ResponseBody Callable<ResponseEntity> downloadXml(@PathVariable String id) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+
+            headers.add("content-disposition", "attachment; filename=\"" + id + ".hml.xml\"");
+            headers.add("Content-Type", "text/xml");
+
+            return () -> new ResponseEntity(FileConverter.convertStringToBytes(hmlService.getXmlHml(id)),
+                    headers, HttpStatus.OK);
+        } catch (Exception ex) {
+            LOG.error("Error downloading json.", ex);
+            return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
