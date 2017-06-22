@@ -99,7 +99,7 @@ public class HmlController implements HmlApi {
     public @ResponseBody Callable<ResponseEntity> downloadJson(@PathVariable String id) {
         try {
             return () -> new ResponseEntity(FileConverter.convertStringToBytes(hmlService.getJsonHml(id)),
-                    getHeadersForDownload(id), HttpStatus.OK);
+                    getHeadersForDownload(id, "json"), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);
             return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -110,17 +110,17 @@ public class HmlController implements HmlApi {
     public @ResponseBody Callable<ResponseEntity> downloadXml(@PathVariable String id) {
         try {
             return () -> new ResponseEntity(FileConverter.convertStringToBytes(hmlService.getXmlHml(id)),
-                    getHeadersForDownload(id), HttpStatus.OK);
+                    getHeadersForDownload(id, "xml"), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);
             return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private HttpHeaders getHeadersForDownload(String fileName) {
+    private HttpHeaders getHeadersForDownload(String fileName, String extension) {
         HttpHeaders headers = new HttpHeaders();
 
-        headers.add("content-disposition", "attachment; filename=\"" + fileName + ".hml.xml\"");
+        headers.add("content-disposition", "attachment; filename=\"" + fileName + ".hml." + extension + "\"");
         headers.add("Content-Type", "text/xml");
 
         return headers;
