@@ -49,6 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+@RestController
+@RequestMapping("/fhir")
+@CrossOrigin
 public class FhirController implements FhirApi {
 
     private static final Logger LOG = Logger.getLogger(FhirController.class);
@@ -98,7 +101,7 @@ public class FhirController implements FhirApi {
     public @ResponseBody
     Callable<ResponseEntity> downloadJson(@PathVariable String id) {
         try {
-            return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getJsonHml(id)),
+            return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getJsonFhir(id)),
                     getHeadersForDownload(id, "json", "application/json"), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);
@@ -109,7 +112,7 @@ public class FhirController implements FhirApi {
     @RequestMapping(path = "/{id}/xml", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
     public @ResponseBody Callable<ResponseEntity> downloadXml(@PathVariable String id) {
         try {
-            return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getXmlHml(id)),
+            return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getXmlFhir(id)),
                     getHeadersForDownload(id, "xml", "text/xml"), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);

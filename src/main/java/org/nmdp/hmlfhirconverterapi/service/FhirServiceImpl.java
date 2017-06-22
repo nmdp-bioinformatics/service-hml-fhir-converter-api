@@ -103,7 +103,7 @@ public class FhirServiceImpl extends MongoServiceBase implements FhirService {
     }
 
     @Override
-    public String getJsonHml(String id) {
+    public String getJsonFhir(String id) {
         try {
             return Serializer.toJson(getFhirFromMongo(id));
         } catch (Exception ex) {
@@ -113,7 +113,7 @@ public class FhirServiceImpl extends MongoServiceBase implements FhirService {
     }
 
     @Override
-    public String getXmlHml(String id) {
+    public String getXmlFhir(String id) {
         try {
             return Serializer.toXml(getFhirFromMongo(id));
         } catch (Exception ex) {
