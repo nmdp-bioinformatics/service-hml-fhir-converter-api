@@ -32,6 +32,7 @@ import org.nmdp.hmlfhir.ConvertHmlToFhirImpl;
 import org.nmdp.hmlfhir.deserialization.HmlXmlDeserializerHyphenatedProperties;
 import org.nmdp.hmlfhirconverterapi.dao.HmlRepository;
 import org.nmdp.hmlfhirconverterapi.dao.custom.HmlCustomRepository;
+import org.nmdp.hmlfhirconverterapi.util.Serializer;
 import org.nmdp.hmlfhirconvertermodels.dto.hml.Hml;
 import org.nmdp.hmlfhirmongo.models.ConversionStatus;
 import org.nmdp.hmlfhirmongo.models.Status;
@@ -117,7 +118,7 @@ public class HmlServiceImpl implements HmlService {
     public String getJsonHml(String id) {
         try {
             Document document = getHmlFromMongo(id);
-            return document.toJson();
+            return Serializer.toJson(document);
         } catch (Exception ex) {
             LOG.error(ex);
             return null;
@@ -127,8 +128,8 @@ public class HmlServiceImpl implements HmlService {
     @Override
     public String getXmlHml(String id) {
         try {
-            String json = getJsonHml(id);
-            return XML.toString(json);
+            Document document = getHmlFromMongo(id);
+            return Serializer.toXml(document);
         } catch (Exception ex) {
             LOG.error(ex);
             return null;
