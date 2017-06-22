@@ -99,7 +99,7 @@ public class FhirController implements FhirApi {
     Callable<ResponseEntity> downloadJson(@PathVariable String id) {
         try {
             return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getJsonHml(id)),
-                    getHeadersForDownload(id, "json"), HttpStatus.OK);
+                    getHeadersForDownload(id, "json", "application/json"), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);
             return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -110,18 +110,18 @@ public class FhirController implements FhirApi {
     public @ResponseBody Callable<ResponseEntity> downloadXml(@PathVariable String id) {
         try {
             return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getXmlHml(id)),
-                    getHeadersForDownload(id, "xml"), HttpStatus.OK);
+                    getHeadersForDownload(id, "xml", "text/xml"), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);
             return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private HttpHeaders getHeadersForDownload(String fileName, String extension) {
+    private HttpHeaders getHeadersForDownload(String fileName, String extension, String contentType) {
         HttpHeaders headers = new HttpHeaders();
 
         headers.add("content-disposition", "attachment; filename=\"" + fileName + ".fhir." + extension + "\"");
-        headers.add("Content-Type", "text/xml");
+        headers.add("Content-Type", contentType);
 
         return headers;
     }
