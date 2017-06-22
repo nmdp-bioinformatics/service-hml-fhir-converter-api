@@ -30,18 +30,18 @@ import io.swagger.api.fhir.FhirApi;
 import org.apache.log4j.Logger;
 
 import org.nmdp.hmlfhirconverterapi.service.FhirService;
+import org.nmdp.hmlfhirconverterapi.util.FileConverter;
 import org.nmdp.hmlfhirconvertermodels.dto.fhir.FhirMessage;
 import org.nmdp.kafkaproducer.kafka.KafkaProducerService;
 
 import org.nmdp.kafkaproducer.util.ConvertToKafkaMessage;
 import org.nmdp.servicekafkaproducermodel.models.KafkaMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -88,5 +88,38 @@ public class FhirController implements FhirApi {
             LOG.error("Error in file upload fhir to hml conversion.", ex);
             return () -> new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @RequestMapping(path = "/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
+    public @ResponseBody
+    Callable<ResponseEntity> downloadJson(@PathVariable String id) {
+        try {
+            return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getJsonHml(id)),
+                    getHeadersForDownload(id), HttpStatus.OK);
+        } catch (Exception ex) {
+            LOG.error("Error downloading json.", ex);
+            return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(path = "/{id}/xml", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
+    public @ResponseBody Callable<ResponseEntity> downloadXml(@PathVariable String id) {
+        try {
+            return () -> new ResponseEntity(FileConverter.convertStringToBytes(fhirService.getXmlHml(id)),
+                    getHeadersForDownload(id), HttpStatus.OK);
+        } catch (Exception ex) {
+            LOG.error("Error downloading json.", ex);
+            return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private HttpHeaders getHeadersForDownload(String fileName) {
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add("content-disposition", "attachment; filename=\"" + fileName + ".fhir.xml\"");
+        headers.add("Content-Type", "text/xml");
+
+        return headers;
     }
 }

@@ -26,7 +26,6 @@ package org.nmdp.hmlfhirconverterapi.service;
 
 import org.apache.log4j.Logger;
 
-import org.json.XML;
 import org.nmdp.hmlfhir.ConvertHmlToFhir;
 import org.nmdp.hmlfhir.ConvertHmlToFhirImpl;
 import org.nmdp.hmlfhir.deserialization.HmlXmlDeserializerHyphenatedProperties;
@@ -34,9 +33,6 @@ import org.nmdp.hmlfhirconverterapi.dao.HmlRepository;
 import org.nmdp.hmlfhirconverterapi.dao.custom.HmlCustomRepository;
 import org.nmdp.hmlfhirconverterapi.util.Serializer;
 import org.nmdp.hmlfhirconvertermodels.dto.hml.Hml;
-import org.nmdp.hmlfhirmongo.models.ConversionStatus;
-import org.nmdp.hmlfhirmongo.models.Status;
-import org.nmdp.hmlfhirmongo.mongo.MongoConversionStatusDatabase;
 import org.nmdp.hmlfhirmongo.mongo.MongoHmlDatabase;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,18 +46,16 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class HmlServiceImpl implements HmlService {
+public class HmlServiceImpl extends MongoServiceBase implements HmlService {
 
     private final static Logger LOG = Logger.getLogger(HmlServiceImpl.class);
     private final HmlCustomRepository customRepository;
     private final HmlRepository repository;
     private final MongoHmlDatabase hmlDatabase;
-    private final MongoConversionStatusDatabase statusDatabase;
     private final Yaml yaml;
 
     @Autowired
@@ -70,7 +64,6 @@ public class HmlServiceImpl implements HmlService {
         this.customRepository = customRepository;
         this.yaml = new Yaml();
         this.hmlDatabase = createHmlDatabase();
-        this.statusDatabase = createStatusDatabase();
     }
 
     @Override
@@ -96,7 +89,7 @@ public class HmlServiceImpl implements HmlService {
             ids.add(hmlDatabase.save(hml));
         }
 
-        return writeConversionStatusToMongo(ids);
+        return super.writeHmlConversionStatusToMongo(ids);
     }
 
     @Override
@@ -117,8 +110,7 @@ public class HmlServiceImpl implements HmlService {
     @Override
     public String getJsonHml(String id) {
         try {
-            Document document = getHmlFromMongo(id);
-            return Serializer.toJson(document);
+            return Serializer.toJson(getHmlFromMongo(id));
         } catch (Exception ex) {
             LOG.error(ex);
             return null;
@@ -128,8 +120,7 @@ public class HmlServiceImpl implements HmlService {
     @Override
     public String getXmlHml(String id) {
         try {
-            Document document = getHmlFromMongo(id);
-            return Serializer.toXml(document);
+            return Serializer.toXml(getHmlFromMongo(id));
         } catch (Exception ex) {
             LOG.error(ex);
             return null;
@@ -153,35 +144,7 @@ public class HmlServiceImpl implements HmlService {
         }
     }
 
-    private MongoConversionStatusDatabase createStatusDatabase() {
-        org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
-
-        try {
-            URL url = new URL("file:." + "/src/main/resources/mongo-configuration.yaml");
-
-            try (InputStream is = url.openStream()) {
-                config = yaml.loadAs(is, org.nmdp.hmlfhirmongo.config.MongoConfiguration.class);
-            }
-
-            return new MongoConversionStatusDatabase(config);
-        } catch (Exception ex) {
-            LOG.error(ex);
-            return new MongoConversionStatusDatabase(null);
-        }
-    }
-
     private Document getHmlFromMongo(String id) throws Exception {
         return hmlDatabase.get(id);
-    }
-
-    private Map<String, org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> writeConversionStatusToMongo(List<org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> hmls) {
-        Map<String, org.nmdp.hmlfhirconvertermodels.dto.hml.Hml> ids = new HashMap<>();
-
-        for (org.nmdp.hmlfhirconvertermodels.dto.hml.Hml hml : hmls) {
-            ConversionStatus status = new ConversionStatus(hml.getId(), Status.QUEUED, 0);
-            ids.put(statusDatabase.save(status).getId(), hml);
-        }
-
-        return ids;
     }
 }

@@ -26,15 +26,13 @@ package org.nmdp.hmlfhirconverterapi.service;
 
 import org.apache.log4j.Logger;
 
+import org.bson.Document;
 import org.nmdp.hmlfhir.ConvertFhirToHml;
 import org.nmdp.hmlfhir.ConvertFhirToHmlImpl;
 import org.nmdp.hmlfhirconverterapi.dao.FhirRepository;
 import org.nmdp.hmlfhirconverterapi.dao.custom.FhirCustomRepository;
+import org.nmdp.hmlfhirconverterapi.util.Serializer;
 import org.nmdp.hmlfhirconvertermodels.dto.fhir.FhirMessage;
-import org.nmdp.hmlfhirmongo.config.MongoConfiguration;
-import org.nmdp.hmlfhirmongo.models.ConversionStatus;
-import org.nmdp.hmlfhirmongo.models.Status;
-import org.nmdp.hmlfhirmongo.mongo.MongoConversionStatusDatabase;
 import org.nmdp.hmlfhirmongo.mongo.MongoFhirDatabase;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,47 +43,35 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class FhirServiceImpl implements FhirService {
+public class FhirServiceImpl extends MongoServiceBase implements FhirService {
 
     private final Yaml yaml;
     private static final Logger LOG = Logger.getLogger(FhirServiceImpl.class);
     private final FhirCustomRepository customRepository;
     private final FhirRepository repository;
+    private final MongoFhirDatabase fhirDatabase;
 
     @Autowired
     public FhirServiceImpl(@Qualifier("fhirCustomRepository") FhirCustomRepository customRepository, @Qualifier("fhirRepository") FhirRepository repository) {
         this.yaml = new Yaml();
         this.customRepository = customRepository;
         this.repository = repository;
+        this.fhirDatabase = createFhirDatabase();
     }
 
     @Override
     public Map<String, FhirMessage> writeFhirToMongoConversionDb(List<FhirMessage> fhirMessages) {
         List<FhirMessage> ids = new ArrayList<>();
-        org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
 
-        try {
-            URL url = new URL("file:." + "/src/main/resources/mongo-configuration.yaml");
-
-            try (InputStream is = url.openStream()) {
-                config = yaml.loadAs(is, org.nmdp.hmlfhirmongo.config.MongoConfiguration.class);
-            }
-
-            final MongoFhirDatabase database = new MongoFhirDatabase(config);
-
-            for (FhirMessage fhirMessage : fhirMessages) {
-                ids.add(database.save(fhirMessage));
-            }
-        } catch (Exception ex) {
-            LOG.error("Error writing Fhir to Mongo.", ex);
+        for (FhirMessage fhirMessage : fhirMessages) {
+            ids.add(fhirDatabase.save(fhirMessage));
         }
 
-        return writeConversionStatusToMongo(config, ids);
+        return super.writeFhirConversionStatusToMongo(ids);
     }
 
     @Override
@@ -116,21 +102,44 @@ public class FhirServiceImpl implements FhirService {
         }
     }
 
-    private Map<String, FhirMessage> writeConversionStatusToMongo(
-            org.nmdp.hmlfhirmongo.config.MongoConfiguration config, List<FhirMessage> fhirMessages) {
-        Map<String, FhirMessage> ids = new HashMap<>();
+    @Override
+    public String getJsonHml(String id) {
+        try {
+            return Serializer.toJson(getFhirFromMongo(id));
+        } catch (Exception ex) {
+            LOG.error(ex);
+            return null;
+        }
+    }
+
+    @Override
+    public String getXmlHml(String id) {
+        try {
+            return Serializer.toXml(getFhirFromMongo(id));
+        } catch (Exception ex) {
+            LOG.error(ex);
+            return null;
+        }
+    }
+
+    private MongoFhirDatabase createFhirDatabase() {
+        org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
 
         try {
-            final MongoConversionStatusDatabase database = new MongoConversionStatusDatabase(config);
+            URL url = new URL("file:." + "/src/main/resources/mongo-configuration.yaml");
 
-            for (FhirMessage fhirMessage : fhirMessages) {
-                ConversionStatus status = new ConversionStatus(fhirMessage.getId(), Status.QUEUED, 0);
-                ids.put(database.save(status).getId(), fhirMessage);
+            try (InputStream is = url.openStream()) {
+                config = yaml.loadAs(is, org.nmdp.hmlfhirmongo.config.MongoConfiguration.class);
             }
-        } catch (Exception ex) {
-            LOG.error("Error writing status to Mongo.", ex);
-        }
 
-        return ids;
+            return new MongoFhirDatabase(config);
+        } catch (Exception ex) {
+            LOG.error(ex);
+            return new MongoFhirDatabase(null);
+        }
+    }
+
+    private Document getFhirFromMongo(String id) throws Exception {
+        return fhirDatabase.get(id);
     }
 }

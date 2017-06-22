@@ -95,13 +95,8 @@ public class HmlController implements HmlApi {
     @RequestMapping(path = "/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
     public @ResponseBody Callable<ResponseEntity> downloadJson(@PathVariable String id) {
         try {
-            HttpHeaders headers = new HttpHeaders();
-
-            headers.add("content-disposition", "attachment; filename=\"" + id + ".hml.json\"");
-            headers.add("Content-Type", "application/json");
-
             return () -> new ResponseEntity(FileConverter.convertStringToBytes(hmlService.getJsonHml(id)),
-                    headers, HttpStatus.OK);
+                    getHeadersForDownload(id), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);
             return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -111,16 +106,20 @@ public class HmlController implements HmlApi {
     @RequestMapping(path = "/{id}/xml", produces = MediaType.MULTIPART_FORM_DATA_VALUE, method = RequestMethod.GET)
     public @ResponseBody Callable<ResponseEntity> downloadXml(@PathVariable String id) {
         try {
-            HttpHeaders headers = new HttpHeaders();
-
-            headers.add("content-disposition", "attachment; filename=\"" + id + ".hml.xml\"");
-            headers.add("Content-Type", "text/xml");
-
             return () -> new ResponseEntity(FileConverter.convertStringToBytes(hmlService.getXmlHml(id)),
-                    headers, HttpStatus.OK);
+                    getHeadersForDownload(id), HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error downloading json.", ex);
             return () -> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private HttpHeaders getHeadersForDownload(String fileName) {
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add("content-disposition", "attachment; filename=\"" + fileName + ".hml.xml\"");
+        headers.add("Content-Type", "text/xml");
+
+        return headers;
     }
 }

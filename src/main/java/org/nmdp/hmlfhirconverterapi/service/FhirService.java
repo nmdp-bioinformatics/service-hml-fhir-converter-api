@@ -33,4 +33,6 @@ public interface FhirService {
     Map<String, FhirMessage> writeFhirToMongoConversionDb(List<FhirMessage> fhirMessages);
     List<FhirMessage> convertByteArrayToFhirMessages(byte[] bytes) throws Exception;
     List<FhirMessage> convertStringToFhirMessages(String xml) throws Exception;
+    String getXmlHml(String id);
+    String getJsonHml(String id);
 }
