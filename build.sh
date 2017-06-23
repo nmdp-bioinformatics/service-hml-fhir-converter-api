@@ -15,6 +15,11 @@ while getopts ":p:b:m:y:" opt; do
     esac
 done
 
+echo $model_path
+echo $python_script
+
+read a
+
 if [ -z "$python_script" ]; then
     echo "Importing model building script from git."
     curl -LJO https://raw.githubusercontent.com/nmdp-bioinformatics/util-swagger-codegen-models/$branch/Download.py
