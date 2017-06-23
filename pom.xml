@@ -142,6 +142,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -189,7 +198,6 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>${log4j-version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -206,7 +214,7 @@
             <artifactId>swagger-annotations</artifactId>
             <version>${swagger-version}</version>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct-core-version}</version>
