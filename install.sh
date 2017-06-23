@@ -2,18 +2,22 @@
 
 SRC_PATH=$(pwd)
 
-while getopts ":p:m:y:b:" opt; do
+while getopts ":p:b:m:y:" opt; do
     case $opt in
         p) packages="$OPTARG"
+        ;;
+        b) branch="$OPTARG"
         ;;
         m) model_path="$OPTARG"
         ;;
         y) python_script="$OPTARG"
         ;;
-        b) branch="$OPTARG"
-        ;;
     esac
 done
+
+if [ -z "$branch" ]; then
+    branch="master"
+fi
 
 if [ -z "$model_path" ]; then
     curl -LJO https://github.com/nmdp-bioinformatics/util-swagger-codegen-models/archive/master.zip
@@ -24,7 +28,7 @@ if [ -z "$model_path" ]; then
     model_path=$SRC_PATH/model_definitions
 fi
 
-sh build.sh -p $packages -m $model_path -b $branch -y $python_script
+sh build.sh -p $packages -b $branch -m $model_path -y $python_script
 
 mvn install:install-file -Dfile=target/service-hml-fhir-converter-api-1.1.0-SNAPSHOT.jar -DgeneratePom=true -DgroupId=org.nmdp -DartifactId=service-hml-fhir-converter-api -Dversion=1.1.0 -Dpackaging=jar
 

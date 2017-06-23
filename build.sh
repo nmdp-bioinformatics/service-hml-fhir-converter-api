@@ -2,23 +2,18 @@
 
 SRC_PATH=$(pwd)
 
-while getopts ":p:m:b:y:" opt; do
+while getopts ":p:b:m:y:" opt; do
     case $opt in
         p) packages="$OPTARG"
         ;;
-        m) model_path="$OPTARG"
-        ;;
         b) branch="$OPTARG"
+        ;;
+        m) model_path="$OPTARG"
         ;;
         y) python_script="$OPTARG"
         ;;
     esac
 done
-
-if [ -z "$branch" ]; then
-    echo "Github branch?"
-    read branch
-fi
 
 if [ -z "$python_script" ]; then
     echo "Importing model building script from git."
