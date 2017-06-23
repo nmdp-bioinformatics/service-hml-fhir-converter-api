@@ -1,51 +1,33 @@
 #!/usr/bin/env bash
 
-while getopts ":u:p:b:m:y:v:" opt; do
+SRC_PATH=$(pwd)
+
+while getopts ":p:m:y:b:" opt; do
     case $opt in
-        u) username="$OPTARG"
-        ;;
-        p) password="$OPTARG"
-        ;;
-        b) branch="$OPTARG"
+        p) packages="$OPTARG"
         ;;
         m) model_path="$OPTARG"
         ;;
         y) python_script="$OPTARG"
         ;;
-        v) mvn_version="$OPTARG"
+        b) branch="$OPTARG"
         ;;
     esac
 done
 
-if [ -z "$username" ]; then
-    echo "Github username?"
-    read username
-fi
-
-if [ -z "$password" ]; then
-    echo "Github password?"
-    read password
-fi
-
-if [ -z "$branch" ]; then
-    echo "Github branch?"
-    read branch
-fi
-
 if [ -z "$model_path" ]; then
-    model_path=
+    curl -LJO https://github.com/nmdp-bioinformatics/util-swagger-codegen-models/archive/master.zip
+    unzip util-swagger-codegen-models-master.zip
+    mv util-swagger-codegen-models-master/model_definitions model_definitions/
+    rm -rf util-swagger-codegen-models-master
+    rm -rf util-swagger-codegen-models-master.zip
+    model_path=$SRC_PATH/model_definitions
 fi
 
-if [ -z "$model_path" ] && [ -z "$python_script" ]; then
-    sh build.sh -u $username -p $password -b $branch
-elif [ ! -z "$model_path" ] && [ -z "$python_script" ]; then
-    sh build.sh -u $username -p $password -b $branch -m $model_path
-elif [ ! -z "$python_script" ] && [ -z "$model_path" ]; then
-    sh build.sh -u $username -p $password -b $branch -y $python_script
-elif [ -z "$python_script" ] && [ -z "$model_path" ]; then
-    sh build.sh -u $username -p $password -b $branch -m $model_path -y $python_script
-fi
+sh build.sh -p $packages -m $model_path -b $branch -y $python_script
 
-mvn install:install-file -Dfile=target/service-hml-fhir-converter-api-1.1.0-SNAPSHOT.jar
+mvn install:install-file -Dfile=target/service-hml-fhir-converter-api-1.1.0-SNAPSHOT.jar -DgeneratePom=true -DgroupId=org.nmdp -DartifactId=service-hml-fhir-converter-api -Dversion=1.1.0 -Dpackaging=jar
+
+rm -rf $model_path
 
 echo "Successfully installed to maven repo."
