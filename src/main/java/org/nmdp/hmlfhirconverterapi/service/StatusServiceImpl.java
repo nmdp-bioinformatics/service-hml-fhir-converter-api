@@ -25,19 +25,28 @@ package org.nmdp.hmlfhirconverterapi.service;
  */
 
 import com.mongodb.client.FindIterable;
+
+import com.mongodb.client.MongoIterable;
 import org.apache.log4j.Logger;
+
 import org.nmdp.hmlfhirconverterapi.dao.StatusRepository;
 import org.nmdp.hmlfhirconverterapi.dao.custom.StatusCustomRepository;
 import org.nmdp.hmlfhirmongo.mongo.MongoConversionStatusDatabase;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
 import org.yaml.snakeyaml.Yaml;
 
 import org.bson.Document;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 @Service
 public class StatusServiceImpl implements StatusService {
 
@@ -55,7 +64,7 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public FindIterable<Document> getStatuses(Integer maxReturn) throws Exception {
+    public List<Document> getStatuses(Integer maxReturn) throws Exception {
         org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
 
         try {
@@ -67,10 +76,28 @@ public class StatusServiceImpl implements StatusService {
 
             final MongoConversionStatusDatabase database = new MongoConversionStatusDatabase(config);
 
-            return database.getMany(maxReturn);
+            return handleMongoId(database.getMany(maxReturn));
         } catch (Exception ex) {
             LOG.error("Error reading Statuses from Mongo.", ex);
             throw ex;
         }
+    }
+
+    private List<Document> handleMongoId(FindIterable<Document> documents) {
+        List<Document> docs = new ArrayList<>();
+        Iterator iterator = documents.iterator();
+
+        while (iterator.hasNext()) {
+            docs.add(convertId((Document) iterator.next()));
+        }
+
+        return docs;
+    }
+
+    private Document convertId(Document document) {
+        Object id = document.get("_id");
+        document.put("_id", id.toString());
+        
+        return document;
     }
 }

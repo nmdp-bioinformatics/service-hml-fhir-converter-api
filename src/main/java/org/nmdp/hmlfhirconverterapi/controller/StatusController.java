@@ -24,8 +24,6 @@ package org.nmdp.hmlfhirconverterapi.controller;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import com.mongodb.client.FindIterable;
-
 import org.apache.log4j.Logger;
 
 import org.bson.Document;
@@ -38,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 @RestController
@@ -54,7 +53,7 @@ public class StatusController {
     }
 
     @RequestMapping(path = "/{maxResults}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public Callable<ResponseEntity<FindIterable<Document>>> get(@PathVariable Integer maxResults) {
+    public Callable<ResponseEntity<List<Document>>> get(@PathVariable Integer maxResults) {
         try {
             return () -> new ResponseEntity<>(statusService.getStatuses(maxResults), HttpStatus.OK);
         } catch (Exception ex) {

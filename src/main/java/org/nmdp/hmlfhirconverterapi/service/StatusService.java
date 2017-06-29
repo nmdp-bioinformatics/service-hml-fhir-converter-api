@@ -24,10 +24,10 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import com.mongodb.client.FindIterable;
-
 import org.bson.Document;
 
+import java.util.List;
+
 public interface StatusService {
-    FindIterable<Document> getStatuses(Integer maxReturn) throws Exception;
+    List<Document> getStatuses(Integer maxReturn) throws Exception;
 }
