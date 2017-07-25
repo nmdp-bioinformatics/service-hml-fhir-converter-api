@@ -26,7 +26,6 @@ package org.nmdp.hmlfhirconverterapi.service;
 
 import com.mongodb.client.FindIterable;
 
-import com.mongodb.client.MongoIterable;
 import org.apache.log4j.Logger;
 
 import org.nmdp.hmlfhirconverterapi.dao.StatusRepository;
@@ -97,7 +96,7 @@ public class StatusServiceImpl implements StatusService {
     private Document convertId(Document document) {
         Object id = document.get("_id");
         document.put("_id", id.toString());
-        
+
         return document;
     }
 }
