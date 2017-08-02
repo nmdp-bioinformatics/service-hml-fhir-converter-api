@@ -26,14 +26,19 @@ package org.nmdp.hmlfhirconverterapi.controller;
 
 import org.apache.log4j.Logger;
 
+import org.nmdp.hmlfhirconverterapi.config.KafkaConfig;
 import org.nmdp.hmlfhirconverterapi.service.SubmissionService;
 
+import org.nmdp.kafkaproducer.kafka.KafkaProducerService;
+import org.nmdp.kafkaproducer.util.ConvertToKafkaMessage;
+import org.nmdp.servicekafkaproducermodel.models.KafkaMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -44,9 +49,25 @@ public class SubmissionController {
 
     private static final Logger LOG = Logger.getLogger(SubmissionController.class);
     private final SubmissionService submissionService;
+    private final KafkaProducerService kafkaProducerService;
+    private final KafkaConfig kafkaConfig;
 
     @Autowired
-    public SubmissionController(SubmissionService submissionService) {
+    public SubmissionController(SubmissionService submissionService, KafkaProducerService kafkaProducerService) {
         this.submissionService = submissionService;
+        this.kafkaProducerService = kafkaProducerService;
+        this.kafkaConfig = KafkaConfig.getConfig();
+    }
+
+    @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public Callable<ResponseEntity<Boolean>> produceKafkaMessage(@RequestBody String statusId) {
+        try {
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(Arrays.asList(statusId), kafkaConfig.getMessageKey());
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getFhirSubmissionTopic(), kafkaConfig.getKey());
+            return () -> new ResponseEntity<>(true, HttpStatus.OK);
+        } catch (Exception ex) {
+            LOG.error("Error in kafka message production.", ex);
+            return () -> new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

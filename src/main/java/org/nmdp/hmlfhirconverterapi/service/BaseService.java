@@ -1,7 +1,7 @@
 package org.nmdp.hmlfhirconverterapi.service;
 
 /**
- * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 7/31/17.
+ * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 8/1/17.
  * <p>
  * service-hml-fhir-converter-api
  * Copyright (c) 2012-2017 National Marrow Donor Program (NMDP)
@@ -24,8 +24,30 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
+import com.mongodb.client.FindIterable;
 import org.bson.Document;
 
-public interface SubmissionService {
-    Document getFhirSubmission(String id) throws Exception;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+abstract class BaseService {
+
+    protected List<Document> handleMongoId(FindIterable<Document> documents) {
+        List<Document> docs = new ArrayList<>();
+        Iterator iterator = documents.iterator();
+
+        while (iterator.hasNext()) {
+            docs.add(convertId((Document) iterator.next()));
+        }
+
+        return docs;
+    }
+
+    protected Document convertId(Document document) {
+        Object id = document.get("_id");
+        document.put("_id", id.toString());
+
+        return document;
+    }
 }

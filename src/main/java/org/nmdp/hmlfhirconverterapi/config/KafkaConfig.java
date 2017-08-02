@@ -33,18 +33,11 @@ import java.net.URL;
 public class KafkaConfig {
 
     private static final Logger LOG = Logger.getLogger(KafkaConfig.class);
-
-    private String topic;
     private String messageKey;
     private String key;
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
+    private String hmlToFhirTopic;
+    private String fhirToHmlTopic;
+    private String fhirSubmissionTopic;
 
     public String getMessageKey() {
         return messageKey;
@@ -60,6 +53,30 @@ public class KafkaConfig {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getHmlToFhirTopic() {
+        return hmlToFhirTopic;
+    }
+
+    public void setHmlToFhirTopic(String hmlToFhirTopic) {
+        this.hmlToFhirTopic = hmlToFhirTopic;
+    }
+
+    public String getFhirToHmlTopic() {
+        return fhirToHmlTopic;
+    }
+
+    public void setFhirToHmlTopic(String fhirToHmlTopic) {
+        this.fhirToHmlTopic = fhirToHmlTopic;
+    }
+
+    public String getFhirSubmissionTopic() {
+        return fhirSubmissionTopic;
+    }
+
+    public void setFhirSubmissionTopic(String fhirSubmissionTopic) {
+        this.fhirSubmissionTopic = fhirSubmissionTopic;
     }
 
     public static KafkaConfig getConfig() {

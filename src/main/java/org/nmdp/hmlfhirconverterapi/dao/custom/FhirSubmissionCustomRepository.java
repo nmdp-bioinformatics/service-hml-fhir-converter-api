@@ -1,7 +1,7 @@
-package org.nmdp.hmlfhirconverterapi.service;
+package org.nmdp.hmlfhirconverterapi.dao.custom;
 
 /**
- * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 7/31/17.
+ * Created by Andrew S. Brown, Ph.D., <andrew@nmdp.org>, on 8/1/17.
  * <p>
  * service-hml-fhir-converter-api
  * Copyright (c) 2012-2017 National Marrow Donor Program (NMDP)
@@ -24,8 +24,17 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import org.bson.Document;
+import org.nmdp.hmlfhirmongo.models.FhirSubmission;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Repository;
 
-public interface SubmissionService {
-    Document getFhirSubmission(String id) throws Exception;
+@Repository
+public class FhirSubmissionCustomRepository extends MongoTemplateRepository<FhirSubmission> {
+
+    @Autowired
+    public FhirSubmissionCustomRepository(@Qualifier("mongoTemplate") MongoTemplate mongoTemplate) {
+        super(FhirSubmission.class, mongoTemplate);
+    }
 }

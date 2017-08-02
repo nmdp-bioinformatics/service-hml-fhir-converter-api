@@ -24,26 +24,58 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
+import org.bson.Document;
+
+import org.yaml.snakeyaml.Yaml;
+
 import org.apache.log4j.Logger;
 
-import org.nmdp.kafkaproducer.kafka.KafkaProducerService;
+import org.nmdp.hmlfhirconverterapi.dao.FhirSubmissionRepository;
+import org.nmdp.hmlfhirconverterapi.dao.custom.FhirSubmissionCustomRepository;
+import org.nmdp.hmlfhirmongo.mongo.MongoFhirSubmissionDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.io.InputStream;
+import java.net.URL;
 
-public class SubmissionServiceImpl implements SubmissionService {
+@Service
+public class SubmissionServiceImpl extends BaseService implements SubmissionService {
 
+    private final Yaml yaml;
     private static final Logger LOG = Logger.getLogger(SubmissionServiceImpl.class);
-    private final KafkaProducerService kafkaProducerService;
+    private final FhirSubmissionCustomRepository customRepository;
+    private final FhirSubmissionRepository repository;
+    private final MongoFhirSubmissionDatabase database;
 
     @Autowired
-    public SubmissionServiceImpl(@Qualifier("kafkaProducerService") KafkaProducerService kafkaProducerService) {
-        this.kafkaProducerService = kafkaProducerService;
+    public SubmissionServiceImpl(@Qualifier("fhirSubmissionCustomRepository") FhirSubmissionCustomRepository customRepository,
+        @Qualifier("fhirSubmissionRepository") FhirSubmissionRepository repository) {
+        this.customRepository = customRepository;
+        this.repository = repository;
+        this.yaml = new Yaml();
+        org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
+
+        try {
+            URL url = new URL("file:." + "/src/main/resources/mongo-configuration.yaml");
+            try (InputStream is = url.openStream()) {
+                config = yaml.loadAs(is, org.nmdp.hmlfhirmongo.config.MongoConfiguration.class);
+            }
+        } catch(Exception ex) {
+            LOG.error("Error instantiating ConversionStatus database.", ex);
+        } finally {
+            this.database = new MongoFhirSubmissionDatabase(config);
+        }
     }
 
     @Override
-    public boolean produceSubmissionMessage(String statusId) {
-
+    public Document getFhirSubmission(String id) throws Exception {
+        try {
+            return database.get(id);
+        } catch (Exception ex) {
+            LOG.error("Error reading Submission from Mongo.", ex);
+            throw ex;
+        }
     }
 }

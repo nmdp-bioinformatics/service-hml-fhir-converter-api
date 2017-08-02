@@ -1,3 +1,5 @@
-topic: hml-fhir-conversion
 key: andrew_dev
 messageKey: abrown3-mbp
+hmlToFhirTopic: hml-fhir-conversion
+fhirToHmlTopic: fhir-hml-conversion
+fhirSubmissionTopic: fhir-submission

@@ -72,7 +72,7 @@ public class HmlController implements HmlApi {
             List<Hml> hmls = hmlService.convertStringToHmls(xml, prefix);
             Map<String, Hml> dbHmls = hmlService.writeHmlToMongoConversionDb(hmls);
             List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbHmls, kafkaConfig.getMessageKey());
-            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getTopic(), kafkaConfig.getKey());
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getHmlToFhirTopic(), kafkaConfig.getKey());
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload hml to fhir conversion.", ex);
@@ -87,7 +87,7 @@ public class HmlController implements HmlApi {
             List<Hml> hmls = hmlService.convertByteArrayToHmls(file.getBytes(), prefix);
             Map<String, Hml> dbHmls = hmlService.writeHmlToMongoConversionDb(hmls);
             List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(dbHmls, kafkaConfig.getMessageKey());
-            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getTopic(), kafkaConfig.getKey());
+            kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getHmlToFhirTopic(), kafkaConfig.getKey());
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {
             LOG.error("Error in file upload hml to fhir conversion.", ex);

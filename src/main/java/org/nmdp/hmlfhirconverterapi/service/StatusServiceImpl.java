@@ -24,8 +24,6 @@ package org.nmdp.hmlfhirconverterapi.service;
  * > http://www.opensource.org/licenses/lgpl-license.php
  */
 
-import com.mongodb.client.FindIterable;
-
 import org.apache.log4j.Logger;
 
 import org.nmdp.hmlfhirconverterapi.dao.StatusRepository;
@@ -42,17 +40,16 @@ import org.bson.Document;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Service
-public class StatusServiceImpl implements StatusService {
+public class StatusServiceImpl extends BaseService implements StatusService {
 
     private final Yaml yaml;
     private static final Logger LOG = Logger.getLogger(StatusServiceImpl.class);
     private final StatusCustomRepository customRepository;
     private final StatusRepository repository;
+    private final MongoConversionStatusDatabase database;
 
     @Autowired
     public StatusServiceImpl(@Qualifier("statusCustomRepository") StatusCustomRepository customRepository,
@@ -60,43 +57,27 @@ public class StatusServiceImpl implements StatusService {
         this.yaml = new Yaml();
         this.customRepository = customRepository;
         this.repository = repository;
-    }
-
-    @Override
-    public List<Document> getStatuses(Integer maxReturn) throws Exception {
         org.nmdp.hmlfhirmongo.config.MongoConfiguration config = null;
 
         try {
             URL url = new URL("file:." + "/src/main/resources/mongo-configuration.yaml");
-
             try (InputStream is = url.openStream()) {
                 config = yaml.loadAs(is, org.nmdp.hmlfhirmongo.config.MongoConfiguration.class);
             }
+        } catch(Exception ex) {
+            LOG.error("Error instantiating ConversionStatus database.", ex);
+        } finally {
+            this.database = new MongoConversionStatusDatabase(config);
+        }
+    }
 
-            final MongoConversionStatusDatabase database = new MongoConversionStatusDatabase(config);
-
+    @Override
+    public List<Document> getStatuses(Integer maxReturn) throws Exception {
+        try {
             return handleMongoId(database.getMany(maxReturn));
         } catch (Exception ex) {
             LOG.error("Error reading Statuses from Mongo.", ex);
             throw ex;
         }
-    }
-
-    private List<Document> handleMongoId(FindIterable<Document> documents) {
-        List<Document> docs = new ArrayList<>();
-        Iterator iterator = documents.iterator();
-
-        while (iterator.hasNext()) {
-            docs.add(convertId((Document) iterator.next()));
-        }
-
-        return docs;
-    }
-
-    private Document convertId(Document document) {
-        Object id = document.get("_id");
-        document.put("_id", id.toString());
-
-        return document;
     }
 }
