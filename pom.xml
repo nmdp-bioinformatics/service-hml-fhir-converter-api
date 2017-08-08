@@ -170,11 +170,6 @@
                 <artifactId>log4j</artifactId>
                 <version>${log4j-version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>log4j-over-slf4j</artifactId>
-                <version>${slf4j-version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -308,10 +303,6 @@
             <groupId>de.odysseus.staxon</groupId>
             <artifactId>staxon</artifactId>
             <version>${odysseus-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
     </dependencies>
 
