@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 
 import org.nmdp.hmlfhirconverterapi.dao.StatusRepository;
 import org.nmdp.hmlfhirconverterapi.dao.custom.StatusCustomRepository;
+import org.nmdp.hmlfhirmongo.models.ConversionStatus;
+import org.nmdp.hmlfhirmongo.models.Status;
 import org.nmdp.hmlfhirmongo.mongo.MongoConversionStatusDatabase;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +79,28 @@ public class StatusServiceImpl extends BaseService implements StatusService {
             return handleMongoId(database.getMany(maxReturn));
         } catch (Exception ex) {
             LOG.error("Error reading Statuses from Mongo.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public Document getStatus(String id) throws Exception {
+        try {
+            return convertId(database.get(id));
+        } catch (Exception ex) {
+            LOG.error("Error reading Status from Mongo.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void updateStatusStatus(Status status, Document statusRow) throws Exception {
+        try {
+            ConversionStatus conversionStatus = ConversionStatus.fromDocument(statusRow);
+            conversionStatus.setStatus(status);
+            database.save(conversionStatus);
+        } catch (Exception ex) {
+            LOG.error("Error updating Status in Mongo.", ex);
             throw ex;
         }
     }

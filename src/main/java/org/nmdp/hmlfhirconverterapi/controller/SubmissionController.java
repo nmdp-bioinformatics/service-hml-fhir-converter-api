@@ -26,9 +26,13 @@ package org.nmdp.hmlfhirconverterapi.controller;
 
 import org.apache.log4j.Logger;
 
+import org.bson.Document;
 import org.nmdp.hmlfhirconverterapi.config.KafkaConfig;
+import org.nmdp.hmlfhirconverterapi.service.FhirService;
+import org.nmdp.hmlfhirconverterapi.service.StatusService;
 import org.nmdp.hmlfhirconverterapi.service.SubmissionService;
 
+import org.nmdp.hmlfhirmongo.models.Status;
 import org.nmdp.kafkaproducer.kafka.KafkaProducerService;
 import org.nmdp.kafkaproducer.util.ConvertToKafkaMessage;
 import org.nmdp.servicekafkaproducermodel.models.KafkaMessage;
@@ -50,19 +54,30 @@ public class SubmissionController {
     private static final Logger LOG = Logger.getLogger(SubmissionController.class);
     private final SubmissionService submissionService;
     private final KafkaProducerService kafkaProducerService;
+    private final FhirService fhirService;
+    private final StatusService statusService;
     private final KafkaConfig kafkaConfig;
 
     @Autowired
-    public SubmissionController(SubmissionService submissionService, KafkaProducerService kafkaProducerService) {
+    public SubmissionController(SubmissionService submissionService, KafkaProducerService kafkaProducerService,
+        FhirService fhirService, StatusService statusService) {
         this.submissionService = submissionService;
         this.kafkaProducerService = kafkaProducerService;
+        this.fhirService = fhirService;
+        this.statusService = statusService;
         this.kafkaConfig = KafkaConfig.getConfig();
     }
 
     @RequestMapping(path = "/{statusId}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public Callable<ResponseEntity<Boolean>> produceKafkaMessage(@PathVariable String statusId) {
         try {
-            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(Arrays.asList(statusId), kafkaConfig.getMessageKey());
+            Document statusRow = statusService.getStatus(statusId);
+            String fhirId = statusRow.getString("fhirId");
+            String fhirPresubmission = fhirService.getJsonFhir(fhirId);
+
+            statusService.updateStatusStatus(Status.SUBMITTING, statusRow);
+
+            List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(Arrays.asList(fhirPresubmission), kafkaConfig.getMessageKey());
             kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getFhirSubmissionTopic(), kafkaConfig.getKey());
             return () -> new ResponseEntity<>(true, HttpStatus.OK);
         } catch (Exception ex) {

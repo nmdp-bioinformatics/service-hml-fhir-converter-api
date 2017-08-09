@@ -25,9 +25,12 @@ package org.nmdp.hmlfhirconverterapi.service;
  */
 
 import org.bson.Document;
+import org.nmdp.hmlfhirmongo.models.Status;
 
 import java.util.List;
 
 public interface StatusService {
     List<Document> getStatuses(Integer maxReturn) throws Exception;
+    Document getStatus(String id) throws Exception;
+    void updateStatusStatus(Status status, Document statusRow) throws Exception;
 }
