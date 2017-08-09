@@ -59,8 +59,8 @@ public class SubmissionController {
         this.kafkaConfig = KafkaConfig.getConfig();
     }
 
-    @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public Callable<ResponseEntity<Boolean>> produceKafkaMessage(@RequestBody String statusId) {
+    @RequestMapping(path = "/{statusId}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    public Callable<ResponseEntity<Boolean>> produceKafkaMessage(@PathVariable String statusId) {
         try {
             List<KafkaMessage> kafkaMessages = ConvertToKafkaMessage.transform(Arrays.asList(statusId), kafkaConfig.getMessageKey());
             kafkaProducerService.produceKafkaMessages(kafkaMessages, kafkaConfig.getFhirSubmissionTopic(), kafkaConfig.getKey());
