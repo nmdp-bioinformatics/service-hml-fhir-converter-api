@@ -96,9 +96,8 @@ public class StatusServiceImpl extends BaseService implements StatusService {
     @Override
     public void updateStatusStatus(Status status, Document statusRow) throws Exception {
         try {
-            ConversionStatus conversionStatus = ConversionStatus.fromDocument(statusRow);
-            conversionStatus.setStatus(status);
-            database.save(conversionStatus);
+            Object id = statusRow.remove("_id");
+            database.update(id.toString(), status);
         } catch (Exception ex) {
             LOG.error("Error updating Status in Mongo.", ex);
             throw ex;
