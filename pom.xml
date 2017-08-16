@@ -223,7 +223,7 @@
             <artifactId>gson</artifactId>
             <version>${gson-version}</version>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-core</artifactId>
             <version>${swagger-version}</version>
