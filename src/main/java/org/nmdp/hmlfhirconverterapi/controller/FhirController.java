@@ -58,6 +58,7 @@ public class FhirController implements FhirApi {
     private final FhirService fhirService;
     private final KafkaProducerService kafkaProducerService;
     private final KafkaConfig kafkaConfig;
+    //
 
     @Autowired
     public FhirController(FhirService fhirService, KafkaProducerService kafkaProducerService) {
