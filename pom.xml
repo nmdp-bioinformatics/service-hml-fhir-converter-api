@@ -37,6 +37,7 @@
         <nmdp-kafka-producer-version>1.0.0</nmdp-kafka-producer-version>
         <nmdp-conversion-version>2.0.0</nmdp-conversion-version>
         <nmdp-mongo-version>1.3.0</nmdp-mongo-version>
+        <nmdp-fhir-submission-version>1.0.0</nmdp-fhir-submission-version>
         <snake-yaml-version>1.16</snake-yaml-version>
         <json-version>20160212</json-version>
         <model-mapper-version>0.7.5</model-mapper-version>
@@ -287,6 +288,11 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nmdp</groupId>
+            <artifactId>fhir-submission</artifactId>
+            <version>${nmdp-fhir-submission-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
