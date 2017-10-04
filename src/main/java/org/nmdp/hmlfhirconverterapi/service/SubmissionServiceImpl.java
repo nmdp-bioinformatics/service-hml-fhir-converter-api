@@ -72,7 +72,7 @@ public class SubmissionServiceImpl extends BaseService implements SubmissionServ
     @Override
     public Document getFhirSubmission(String id) throws Exception {
         try {
-            return database.get(id);
+            return convertId(database.get(id));
         } catch (Exception ex) {
             LOG.error("Error reading Submission from Mongo.", ex);
             throw ex;

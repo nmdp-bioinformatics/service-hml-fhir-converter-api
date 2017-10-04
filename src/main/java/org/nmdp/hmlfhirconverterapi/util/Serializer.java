@@ -27,6 +27,8 @@ package org.nmdp.hmlfhirconverterapi.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import de.odysseus.staxon.json.JsonXMLConfig;
 import de.odysseus.staxon.json.JsonXMLConfigBuilder;
 import de.odysseus.staxon.json.JsonXMLInputFactory;
@@ -48,6 +50,15 @@ public class Serializer {
     public static <T> String toJson(T object) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(object);
+    }
+
+    public static <T> String toJson(T object, String id) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement json = gson.toJsonTree(object);
+        JsonObject jsonObject = (JsonObject) json;
+        jsonObject.addProperty("fhirId", id);
+
+        return gson.toJson(jsonObject);
     }
 
     public static String toXml(Document document) {

@@ -105,7 +105,7 @@ public class FhirServiceImpl extends MongoServiceBase implements FhirService {
     @Override
     public String getJsonFhir(String id) {
         try {
-            return Serializer.toJson(getFhirFromMongo(id));
+            return Serializer.toJson(getFhirFromMongo(id), id);
         } catch (Exception ex) {
             LOG.error(ex);
             return null;

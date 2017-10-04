@@ -32,6 +32,7 @@ import org.nmdp.hmlfhirconverterapi.service.FhirService;
 import org.nmdp.hmlfhirconverterapi.service.StatusService;
 import org.nmdp.hmlfhirconverterapi.service.SubmissionService;
 
+import org.nmdp.hmlfhirmongo.models.FhirSubmission;
 import org.nmdp.hmlfhirmongo.models.Status;
 import org.nmdp.kafkaproducer.kafka.KafkaProducerService;
 import org.nmdp.kafkaproducer.util.ConvertToKafkaMessage;
@@ -83,6 +84,16 @@ public class SubmissionController {
         } catch (Exception ex) {
             LOG.error("Error in kafka message production.", ex);
             return () -> new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(path = "/{submissionId}/{get}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    public Callable<ResponseEntity<Document>> getFhirSubmission(@PathVariable String submissionId) {
+        try {
+            return () -> new ResponseEntity<>(submissionService.getFhirSubmission(submissionId), HttpStatus.OK);
+        } catch (Exception ex) {
+            LOG.error("Error in retriving submission record.", ex);
+            return () -> new ResponseEntity<>(new Document(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
